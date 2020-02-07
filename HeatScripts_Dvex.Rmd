@@ -1,0 +1,607 @@
+---
+title: "Heat Maps Dvex"
+author: "Katy Newcomer"
+date: "May 29, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+##HeatMaps
+
+```{r}
+
+
+library("ggplot2", lib.loc="~/R/win-library/3.5")
+library("lattice", lib.loc="C:/Program Files/R/R-3.5.0/library")
+DataHM<-read.csv("D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/HeatMapAll_29may2019.CSV")
+
+library(rasterVis)
+```
+
+Need all these probably.
+
+Now set it so the background color can be light gray (this will represent un-surveyed space)
+``` {r}
+myTheme <- BTCTheme()
+myTheme$panel.background$col = 'lightgray' 
+
+```
+
+Ok so this saves each plot as a jpeg to the folder path set. Change the file name for each.
+
+Each of these uses the subset function for Plot and Time, make sure to change that every time.
+
+make sure to update ylim every time with the highest number of rows in each set, by adjusting the beginning formula for max rows
+
+#Complex
+```{r}
+
+#Complex1
+RowC1 <- subset(DataHM, Plot == 'Complex 1', select=c(Heat.Row))
+k<-max(RowC1, na.rm=TRUE)
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex1Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 1 Pre", par.settings = myTheme , ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex1Post1.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 1 Post1", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex1Post2.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 1 Post2", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex1PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 1 PostA", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+#Complex2
+
+RowC2 <- subset(DataHM, Plot == 'Complex 2', select=c(Heat.Row))
+k<-max(RowC2, na.rm=TRUE)
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex2Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 2 Pre", par.settings = myTheme , ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex2Post1.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 2 Post1", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex2Post2.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 2 Post2", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex2PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 2 PostA", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+#Complex3
+
+RowC3 <- subset(DataHM, Plot == 'Complex 3', select=c(Heat.Row))
+k<-max(RowC3, na.rm=TRUE)
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex3Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 3 Pre", par.settings = myTheme , ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex3Post1.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 3 Post1", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex3PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 3 PostA", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+#Complex4
+
+RowC4 <- subset(DataHM, Plot == 'Complex 4', select=c(Heat.Row))
+k<-max(RowC4, na.rm=TRUE)
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex4Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 4 Pre", par.settings = myTheme , ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex4Post1.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 4 Post1", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex4PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 4 PostA", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+#Complex5
+
+RowC5 <- subset(DataHM, Plot == 'Complex 5', select=c(Heat.Row))
+k<-max(RowC5, na.rm=TRUE)
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex5Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 5 Pre", par.settings = myTheme , ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex5Post1.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 5 Post1", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Complex5PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex 5 PostA", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+```
+
+#Simple 
+
+``` {r}
+
+#Simple1
+RowS1 <- subset(DataHM, Plot == 'Simple 1', select=c(Heat.Row))
+j<-max(RowS1, na.rm=TRUE)
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple1Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 1 Pre", par.settings = myTheme , ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple1Post1.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 1 Post1", par.settings = myTheme ,ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple1Post2.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 1 Post2", par.settings = myTheme ,ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple1PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 1 PostA", par.settings = myTheme ,ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+#Simple2
+RowS2 <- subset(DataHM, Plot == 'Simple 2', select=c(Heat.Row))
+j<-max(RowS2, na.rm=TRUE)
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple2Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 2 Pre", par.settings = myTheme , ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple2Post1.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 2 Post1", par.settings = myTheme ,ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple2Post2.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 2 Post2", par.settings = myTheme ,ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple2PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 2 PostA", par.settings = myTheme ,ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+#Simple3
+RowS3 <- subset(DataHM, Plot == 'Simple 3', select=c(Heat.Row))
+j<-max(RowS3, na.rm=TRUE)
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple3Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 3 Pre", par.settings = myTheme , ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple3Post1.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 3 Post1", par.settings = myTheme ,ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple3PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 3 PostA", par.settings = myTheme ,ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+#Simple4
+RowS4 <- subset(DataHM, Plot == 'Simple 4', select=c(Heat.Row))
+j<-max(RowS4, na.rm=TRUE)
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple4Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 4 Pre", par.settings = myTheme , ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple4Post1.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 4 Post1", par.settings = myTheme ,ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple4PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 4 PostA", par.settings = myTheme ,ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+#Simple6
+RowS6 <- subset(DataHM, Plot == 'Simple 6', select=c(Heat.Row))
+j<-max(RowS6, na.rm=TRUE)
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple6Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 6 Pre", par.settings = myTheme , ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple6Post1.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 6 Post1", par.settings = myTheme ,ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/Simple6PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple 6 PostA", par.settings = myTheme ,ylim = c(0,j), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+```
+
+Simple 2 desperately needs the heatrows/cols fixed (lol) see if post 2 makes the most sense
+Same for Simple 3... and simple 4... (is simple 4 post1 missing).. and simple 6
+
+
+#Complex Control
+```{r}
+
+#ComplexControl1
+RowCC1 <- subset(DataHM, Plot == 'Complex Control 1', select=c(Heat.Row))
+k<-max(RowCC1, na.rm=TRUE)
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/ComplexControl1Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex Control 1 Pre", par.settings = myTheme , ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/ComplexControl1Post2.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex Control 1 Post2", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/ComplexControl1PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex Control 1 PostA", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+#ComplexControl2
+
+RowCC2 <- subset(DataHM, Plot == 'Complex Control 2', select=c(Heat.Row))
+k<-max(RowCC2, na.rm=TRUE)
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/ComplexControl2Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex Control 2 Pre", par.settings = myTheme , ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/ComplexControl2PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex Control 2 PostA", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+#ComplexControl3
+
+RowCC3 <- subset(DataHM, Plot == 'Complex Control 3', select=c(Heat.Row))
+k<-max(RowCC3, na.rm=TRUE)
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/ComplexControl3Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex Control 3 Pre", par.settings = myTheme , ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/ComplexControl3PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Complex Control 3 PostA", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+```
+#Simple Control
+```{r}
+
+#SimpleControl1
+RowSC1 <- subset(DataHM, Plot == 'Simple Control 1', select=c(Heat.Row))
+k<-max(RowSC1, na.rm=TRUE)
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/SimpleControl1Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple Control 1 Pre", par.settings = myTheme , ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/SimpleControl1Post2.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple Control 1 Post2", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/SimpleControl1PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple Control 1 PostA", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+#SimpleControl2
+
+RowSC2 <- subset(DataHM, Plot == 'Simple Control 2', select=c(Heat.Row))
+k<-max(RowSC2, na.rm=TRUE)
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/SimpleControl2Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple Control 2 Pre", par.settings = myTheme , ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/SimpleControl2PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple Control 2 PostA", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+#SimpleControl3
+
+RowSC3 <- subset(DataHM, Plot == 'Simple Control 3', select=c(Heat.Row))
+k<-max(RowSC3, na.rm=TRUE)
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/SimpleControl3Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple Control 3 Pre", par.settings = myTheme , ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/KATY @ THA LIB/Heat Maps/Maps 29May2019/SimpleControl3PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM, subset = Plot.Time =="Simple Control 3 PostA", par.settings = myTheme ,ylim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+```
+
+If I wanted to change the color scheme - see below
+
+##try a red to green gradient
+## Set up color gradient with 100 values between 0.0 and 1.0
+breaks <- seq(0, 80)
+cols <- colorRampPalette(c("yellow", "orange", "red"))(length(breaks)-1)
+cols2 <- heat.colors(100)[length(heat.colors(100)):1]
+
+levelplot(Z ~ X*Y, data=Data2Post6  ,xlab="X" , xlim = c(0,7), ylim = c(0,8),
+          col.regions = cols, 
+          at=seq(min(0), max(80))   , main="")
+          
+      
+```{r}
+#fixing simple graphs
+#15jan20, used updated x,y layout in new file
+
+DataHM2<-read.csv("D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/HeatMapAll_11Jan20_correctedsimple.CSV")
+
+
+#Simple1
+RowS1 <- subset(DataHM2, Plot == 'Simple 1', select=c(Heat.Row))
+j<-max(RowS1, na.rm=TRUE)
+ColS1<- subset(DataHM2, Plot == 'Simple 1', select=c(Heat.Col))
+k<-max(ColS1, na.rm=TRUE)
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple1Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 1 Pre", par.settings = myTheme , ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple1Post1.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 1 Post1", par.settings = myTheme ,ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple1Post2.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 1 Post2", par.settings = myTheme ,ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple1PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 1 PostA", par.settings = myTheme ,ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+#Simple2
+RowS2 <- subset(DataHM2, Plot == 'Simple 2', select=c(Heat.Row))
+j<-max(RowS2, na.rm=TRUE)
+ColS2<- subset(DataHM2, Plot == 'Simple 2', select=c(Heat.Col))
+k<-max(ColS2, na.rm=TRUE)
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple2Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 2 Pre", par.settings = myTheme , ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple2Post1.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 2 Post1", par.settings = myTheme ,ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple2Post2.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 2 Post2", par.settings = myTheme ,ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple2PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 2 PostA", par.settings = myTheme ,ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+#Simple3
+RowS3 <- subset(DataHM2, Plot == 'Simple 3', select=c(Heat.Row))
+j<-max(RowS3, na.rm=TRUE)
+ColS3<- subset(DataHM2, Plot == 'Simple 3', select=c(Heat.Col))
+k<-max(ColS3, na.rm=TRUE)
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple3Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 3 Pre", par.settings = myTheme , ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple3Post1.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 3 Post1", par.settings = myTheme ,ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple3PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 3 PostA", par.settings = myTheme ,ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+#Simple4
+RowS4 <- subset(DataHM2, Plot == 'Simple 4', select=c(Heat.Row))
+j<-max(RowS4, na.rm=TRUE)
+ColS4<- subset(DataHM2, Plot == 'Simple 4', select=c(Heat.Col))
+k<-max(ColS4, na.rm=TRUE)
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple4Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 4 Pre", par.settings = myTheme , ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple4Post1.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 4 Post1", par.settings = myTheme ,ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple4PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 4 PostA", par.settings = myTheme ,ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+#Simple6
+RowS6 <- subset(DataHM2, Plot == 'Simple 6', select=c(Heat.Row))
+j<-max(RowS6, na.rm=TRUE)
+ColS6<- subset(DataHM2, Plot == 'Simple 6', select=c(Heat.Col))
+k<-max(ColS6, na.rm=TRUE)
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple6Pre.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 6 Pre", par.settings = myTheme , ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple6Post1.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 6 Post1", par.settings = myTheme ,ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+
+jpeg('D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Manuscript Updates 2020/Figures/Simple6PostA.jpg')
+levelplot(Percent.Dvex.Cover ~ Heat.Col * Heat.Row, data=DataHM2, subset = Plot.Time =="Simple 6 PostA", par.settings = myTheme ,ylim = c(0,j), xlim = c(0,k), 
+          col.regions = heat.colors(100)[length(heat.colors(100)):1],
+          at=seq(min(0), max(80)), main="")
+dev.off()
+
+
+```
