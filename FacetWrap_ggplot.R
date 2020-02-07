@@ -1,3 +1,4 @@
+#This was a big xy plot of many panels
 Simkanin<-read.csv(file.choose(),header=T)
 
 scat1 <- ggplot(data=Simkanin, aes(x=Lat, y=ProbabilityScore)) + geom_point()
