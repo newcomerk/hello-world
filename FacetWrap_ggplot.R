@@ -1,4 +1,5 @@
 #This was a big xy plot of many panels
+#Not sure if I wrote this for Simkanin or she sent it to me?
 Simkanin<-read.csv(file.choose(),header=T)
 
 scat1 <- ggplot(data=Simkanin, aes(x=Lat, y=ProbabilityScore)) + geom_point()
