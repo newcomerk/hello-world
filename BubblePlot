@@ -1,0 +1,29 @@
+#This makes a plot where the variables show up as the size of a circle, placed along the x axis of latitude. Good for spatial comparison
+
+#this is a big dataset with everything, need to make subsets for different things
+BayData13nov<-read.csv("D:/Dropbox (Smithsonian)/Point Count Functional Group Paper/KN Stats Scratch/TotalPrimary_PC_BayLevel_13nov19.CSV")
+
+#new file had extra empty rows
+BayData13nov <- BayData13nov %>% na.omit()
+
+#(subset of funcgrp, bay name, zone name, lat)
+r.BayData13nov<-BayData13nov[,c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,18,21,22)]
+mbaydata2 <- melt(r.BayData13nov, id=c("Bay.Name","Bay.Code","MEOW.Provinces","MEOW.Ecoregion","Average.of.Lat"))
+
+
+## making andy's figure
+library(ggplot2)
+png(filename="andysplot2.png", 
+    type="cairo",
+    units="in", 
+    width=12, 
+    height=9, 
+    pointsize=10, 
+    res=96)
+
+ggplot(mbaydata2, aes(y = variable, x = Average.of.Lat)) +
+  geom_point(aes(size = (value*100)), color = "sky blue") +
+  scale_size_continuous(range = c(0, 15)) +
+  xlab("Latitude") + ylab(" ") 
+dev.off()
+
