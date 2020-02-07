@@ -1,0 +1,188 @@
+
+#barplots
+#regular set up
+library(ggplot2)
+library(viridis)
+library(hrbrthemes)
+library(reshape2)
+
+s.BayData13nov<-BayData13nov[,c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,18,24,25)]
+#(subset of funcgrp, bay name, zone name, lat)
+mbaydata <- melt(s.BayData13nov, id=c("Bay.Name","Bay.Code","GRANDGEO","REG_LRGGEO","Average.of.Lat"))
+r.BayData13nov<-BayData13nov[,c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,18,21,22)]
+mbaydata2 <- melt(r.BayData13nov, id=c("Bay.Name","Bay.Code","MEOW.Provinces","MEOW.Ecoregion","Average.of.Lat"))
+
+# Graph IUCN
+ggplot(mbaydata) + 
+  facet_wrap(~REG_LRGGEO, scale="free_x") +
+  geom_bar(position="fill", aes(fill=variable, y=value, x=Bay.Code), stat="identity") +
+  ggtitle("Functional Group by IUCN Zone") +
+  
+  theme(legend.position="right") +
+  xlab("")
+
+# Graph MEOW
+ggplot(mbaydata2) + 
+  facet_wrap(~MEOW.Ecoregion, scale="free_x") +
+  geom_bar(position="fill", aes(fill=variable, y=value, x=Bay.Code), stat="identity") +
+  ggtitle("Functional Group by MEOW Ecoregion") +
+  
+  theme(legend.position="right") +
+  xlab("")    
+
+# Graph MEOW
+ggplot(mbaydata2) + 
+  facet_wrap(~MEOW.Provinces, scale="free_x") +
+  geom_bar(position="fill", aes(fill=variable, y=value, x=Bay.Code), stat="identity") +
+  ggtitle("Functional Group by MEOW Province") +
+  
+  theme(legend.position="right") +
+  xlab("")    
+
+
+##circular bar IUCN
+
+library(tidyverse)
+library(viridis)
+library(dplyr)
+library(ggplot2)
+# Set a number of 'empty bar' to add at the end of each group
+empty_bar=2
+nObsType = nlevels(as.factor(mbaydata$variable))
+to_add = data.frame( matrix(NA, empty_bar* nlevels(mbaydata$REG_LRGGEO)*nObsType, ncol(mbaydata)) )
+colnames(to_add) = colnames(mbaydata)
+to_add$REG_LRGGEO=rep(levels(mbaydata$REG_LRGGEO), each=empty_bar*nObsType )
+data=rbind(mbaydata, to_add)
+data=data %>% arrange(REG_LRGGEO, Bay.Name)
+data$id=rep( seq(1, nrow(data)/nObsType) , each=nObsType)
+
+# Get the name and the y position of each label
+label_data= data %>% group_by(id, Bay.Name) %>% summarize(tot=sum(value))
+number_of_bar=nrow(label_data)
+angle= 90 - 360 * (label_data$id-0.5) /number_of_bar     # I substract 0.5 because the letter must have the angle of the center of the bars. Not extreme right(1) or extreme left (0)
+label_data$hjust<-ifelse( angle < -90, 1, 0)
+label_data$angle<-ifelse(angle < -90, angle+180, angle)
+
+# prepare a data frame for base lines
+base_data=data %>% 
+  group_by(REG_LRGGEO) %>% 
+  summarize(start=min(id), end=max(id) - empty_bar) %>% 
+  rowwise() %>% 
+  mutate(title=mean(c(start, end)))
+
+# prepare a data frame for grid (scales)
+grid_data = base_data
+grid_data$end = grid_data$end[ c( nrow(grid_data), 1:nrow(grid_data)-1)] + 1
+grid_data$start = grid_data$start - 1
+grid_data=grid_data[-1,]
+
+# Make the plot
+p = ggplot(data) +      
+  
+  # Add the stacked bar
+  geom_bar(aes(x=as.factor(id), y=value, fill=variable), stat="identity", alpha=0.5) +
+  scale_fill_viridis(discrete=TRUE) +
+  
+  # Add a val=100/75/50/25 lines. I do it at the beginning to make sur barplots are OVER it.
+  geom_segment(data=grid_data, aes(x = end, y = 0, xend = start, yend = 0), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 0.25, xend = start, yend = 0.25), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 0.5, xend = start, yend = 0.5), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 0.75, xend = start, yend = 0.75), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 1, xend = start, yend = 1), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
+  
+  # Add text showing the value of each 100/75/50/25 lines
+  annotate("text", x = rep(max(data$id),5), y = c(0, 0.25, 0.5, 0.75, 1), label = c("0", "25", "50", "75", "100") , color="grey", size=2 , angle=0, fontface="bold", hjust=1) +
+  
+  ylim(-1,max(label_data$tot, na.rm=T)) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    plot.margin = unit(rep(-1,4), "cm") 
+  ) +
+  coord_polar() +
+  
+  # Add labels on top of each bar
+  geom_text(data=label_data, aes(x=id, y=tot, label=Bay.Name, hjust=hjust), color="black", fontface="bold",alpha=0.6, size=2, angle= label_data$angle, inherit.aes = FALSE ) +
+  
+  # Add base line information
+  geom_segment(data=base_data, aes(x = start, y = -0.02, xend = end, yend = -0.02), colour = "black", alpha=0.8, size=0.6 , inherit.aes = FALSE )  +
+  geom_text(data=base_data, aes(x = title, y = -0.1, label=REG_LRGGEO), colour = "black", alpha=0.8, size=4, fontface="bold", inherit.aes = FALSE)
+p
+
+
+##circular bar MEOW this isn't quite working
+#this is modified from here: https://www.r-graph-gallery.com/circular-barplot.html
+
+library(tidyverse)
+library(viridis)
+library(dplyr)
+library(ggplot2)
+# Set a number of 'empty bar' to add at the end of each group
+empty_bar=1
+nObsType = nlevels(as.factor(mbaydata2$variable))
+to_add = data.frame( matrix(NA, empty_bar* nlevels(mbaydata2$MEOW.Provinces)*nObsType, ncol(mbaydata2)) )
+colnames(to_add) = colnames(mbaydata2)
+to_add$MEOW.Provinces=rep(levels(mbaydata2$MEOW.Provinces), each=empty_bar*nObsType )
+data=rbind(mbaydata2, to_add)
+data=data %>% arrange(MEOW.Provinces, Bay.Name)
+data$id=rep( seq(1, nrow(data)/nObsType) , each=nObsType)
+
+# Get the name and the y position of each label
+label_data= data %>% group_by(id, Bay.Name) %>% summarize(tot=sum(value))
+number_of_bar=nrow(label_data)
+angle= 90 - 360 * (label_data$id-0.5) /number_of_bar     # I substract 0.5 because the letter must have the angle of the center of the bars. Not extreme right(1) or extreme left (0)
+label_data$hjust<-ifelse( angle < -90, 1, 0)
+label_data$angle<-ifelse(angle < -90, angle+180, angle)
+
+# prepare a data frame for base lines
+base_data=data %>% 
+  group_by(MEOW.Provinces) %>% 
+  summarize(start=min(id), end=max(id) - empty_bar) %>% 
+  rowwise() %>% 
+  mutate(title=mean(c(start, end)))
+
+# prepare a data frame for grid (scales)
+grid_data = base_data
+grid_data$end = grid_data$end[ c( nrow(grid_data), 1:nrow(grid_data)-1)] + 1
+grid_data$start = grid_data$start - 1
+grid_data=grid_data[-1,]
+
+# Make the plot
+p = ggplot(data) +      
+  
+  # Add the stacked bar
+  geom_bar(aes(x=as.factor(id), y=value, fill=variable), stat="identity", alpha=0.5) +
+  scale_fill_viridis(discrete=TRUE) +
+  
+  # Add a val=100/75/50/25 lines. I do it at the beginning to make sur barplots are OVER it.
+  geom_segment(data=grid_data, aes(x = end, y = 0, xend = start, yend = 0), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 0.25, xend = start, yend = 0.25), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 0.5, xend = start, yend = 0.5), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 0.75, xend = start, yend = 0.75), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 1, xend = start, yend = 1), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
+  
+  # Add text showing the value of each 100/75/50/25 lines
+  annotate("text", x = rep(max(data$id),5), y = c(0, 0.25, 0.5, 0.75, 1), label = c("0", "25", "50", "75", "100") , color="grey", size=2 , angle=0, fontface="bold", hjust=1) +
+  
+  ylim(-1,max(label_data$tot, na.rm=T)) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    plot.margin = unit(rep(-1,4), "cm") 
+  ) +
+  coord_polar() +
+  
+  # Add labels on top of each bar
+  geom_text(data=label_data, aes(x=id, y=tot, label=Bay.Name, hjust=hjust), color="black", fontface="bold",alpha=0.6, size=2, angle= label_data$angle, inherit.aes = FALSE ) +
+  
+  # Add base line information
+  geom_segment(data=base_data, aes(x = start, y = -0.02, xend = end, yend = -0.02), colour = "black", alpha=0.8, size=0.6 , inherit.aes = FALSE )  +
+  geom_text(data=base_data, aes(x = title, y = -0.1, label=MEOW.Provinces), colour = "black", alpha=0.8, size=4, fontface="bold", inherit.aes = FALSE)
+p
+
