@@ -1,0 +1,75 @@
+#dendrograms
+#in this example IUCN and MEOW are regions of the world, the data is marine biofouling from point counts
+
+#make a copy of the database and add row names
+#added rownames so labels wouldn't be random numbers
+
+BayData13novNMDS.2 <- BayData13novNMDS
+row.names(BayData13novNMDS.2) <- BayData13nov$Bay.Name
+
+
+#bray-curtis and average link
+PC.mat<-sqrt(BayData13novNMDS.2)#square root transform
+PC.dist<-vegdist(PC.mat, method='bray')
+clus_bayPC<-hclust(PC.dist,"average")
+plot(clus_bayPC,main="Average Linkage")
+
+
+#IUCN has 7 levels
+#this divides in 7 clusters, clusters are randomly chosen number of breaks, 7 because, 7 zones
+rect.hclust(clus_bayPC,7)
+
+#different design
+dend <- as.dendrogram(clus_bayPC)
+dend
+plot(dend)
+
+#this is a circle dedrogram, colored by the cluster
+library(ape)
+plot(as.phylo(clus_bayPC), type = "unrooted", cex = 0.6,
+     no.margin = TRUE)
+plot(as.phylo(clus_bayPC), type = "fan")
+colors = c("red", "blue", "green", "black", "orange","purple")
+clus6 = cutree(clus_bayPC, 6)
+plot(as.phylo(clus_bayPC), type = "fan", tip.color = colors[clus6],
+     cex = 0.7)
+
+#this is a circle dedrogram, colored by the true IUCN bioregion
+plot(as.phylo(clus_bayPC), type = "unrooted", cex = 0.6,
+     no.margin = TRUE)
+plot(as.phylo(clus_bayPC), type = "fan")
+colors = c("red", "blue", "green", "black", "orange","purple")
+plot(as.phylo(clus_bayPC), type = "fan", tip.color = colors[GEOfactor],
+     cex = 0.7)      
+
+#this is a circle dedrogram, colored by the true MEOW bioregion
+plot(as.phylo(clus_bayPC), type = "unrooted", cex = 0.6,
+     no.margin = TRUE)
+plot(as.phylo(clus_bayPC), type = "fan")
+colors = c("red", "blue", "green", "black", "orange","purple","pink","gray","darkgreen","navy")
+plot(as.phylo(clus_bayPC), type = "fan", tip.color = colors[Provfactor],
+     cex = 0.7)            
+
+
+#MEOW has 10 levels      
+
+#this is unrooted , colored by the true MEOW Province
+colors = c(viridis(10))
+plot(as.phylo(clus_bayPC), type = "unrooted",tip.color = colors[Provfactor], cex = 0.6,
+     no.margin = TRUE)
+
+
+
+#this is a circle dedrogram, colored by the true MEOW Province
+plot(as.phylo(clus_bayPC), type = "fan")
+colors = c(rainbow(10))
+plot(as.phylo(clus_bayPC), type = "fan", tip.color = colors[Provfactor],
+     cex = 0.7)            
+
+library("dendextend", lib.loc="~/R/win-library/3.5")
+colors_to_use <- c(rainbow(10)[Provfactor])      
+labels_colors(dend) <- colors_to_use
+plot(dend,main="Average Linkage")
+rect.hclust(clus_bayPC,10)
+
+
