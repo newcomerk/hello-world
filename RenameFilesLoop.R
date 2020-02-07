@@ -1,7 +1,7 @@
 ##Updated Word Tester
 ##Ctrl F for “SF_2017_InitialTest” and replace with “Bay_Year” new file name
 ##Ctrl F for “SF 2012 Proofed Overlays” and replace with “Bay Year Overlays” new folder name
-
+#The point of this code is to add an overlay (a png of the same size) on a bunch of photos. it also renames them.
 
 #Load the package
 install.packages("magick")
