@@ -1,0 +1,275 @@
+---
+title: "NMDS_Dvex"
+author: "Katy Newcomer"
+date: "June 4, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+#NMDS plots
+```{r}
+library(vegan)
+```
+
+The function `metaMDS` will take care of most of the distance 
+calculations, iterative fitting, etc. We need simply to supply:
+example_NMDS=metaMDS(community_matrix, # Our community-by-species matrix
+                     k=2) # The number of reduced dimensions
+You should see each iteration of the NMDS until a solution is reached
+(i.e., stress was minimized after some number of reconfigurations of 
+the points in 2 dimensions). You can increase the number of default 
+iterations using the argument "trymax=##"
+example_NMDS=metaMDS(community_matrix,k=2,trymax=100)
+
+default in metaMDS is to use bray and sqrt transformation
+
+stressplot(example_NMDS)
+Large scatter around the line suggests that original dissimilarities are
+not well preserved in the reduced number of dimensions
+
+Generally, stress < 0.05 provides an excellent represention in reduced 
+dimensions, < 0.1 is great, < 0.2 is good, and stress > 0.3 provides a 
+poor representation
+
+
+```{r}
+DataNMDS<-read.csv("D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/R_Background_MDS_May2019.CSV")
+
+Dvex_NMDS <- metaMDS(DataNMDS, k=2, trymax=100)
+Dvex_NMDS
+
+stressplot(Dvex_NMDS)
+plot(Dvex_NMDS)
+```
+
+ordihull - draws the polygon
+col is color, lwd is thickness of line
+
+orditorp - writes labels
+species is column headers, sites is (non existant) row headers
+but can only use what was in the original upload.
+
+ordiellipse - draws ellipses
+can also draw polygons
+
+points() - draws points
+
+text() - writes text as points
+
+```{r}
+##load the background data file
+Dvex_Info<-read.csv("D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/R_Details_Background_MDS_May2019.CSV")
+
+#make some factor levels
+Timefactor<-factor(Dvex_Info$Time)
+Fullfactor<-factor(Dvex_Info$Full)
+Trtfactor <-factor(Dvex_Info$Treatment)
+Typefactpr <-factor(Dvex_Info$Type)
+Monthfactor <-factor(Dvex_Info$Sample.Month)
+chlfactor <-factor(Dvex_Info$Chlorine)
+#plot an empty nmds
+plot(Dvex_NMDS, disp="sites", type="n")
+#draw circles around the Control/Treated groups
+ordiellipse(Dvex_NMDS, Dvex_Info$Treatment, col=1:5, kind = "ehull", lwd=3,label=TRUE)
+
+#do again but draw circles around what time period it is
+plot(Dvex_NMDS, disp="sites", type="n")
+ordiellipse(Dvex_NMDS, Dvex_Info$Time, col=1:5, kind = "ehull", lwd=3,label=TRUE)
+
+#do again but draw circles around what month the survey was
+plot(Dvex_NMDS, disp="sites", type="n")
+ordiellipse(Dvex_NMDS, Dvex_Info$Sample.Month, col=1:5, kind = "ehull", lwd=3,label=TRUE)
+
+#can plot points in different colors with text overlay but looks a little sloppy
+plot(Dvex_NMDS, disp="sites", type="n")
+points(Dvex_NMDS, display="sites", cex=2, pch=21, col=c(1,2,3,4,5)[Timefactor])
+text(Dvex_NMDS, display="sites", cex=0.8, as.character(Dvex_Info$Treatment))
+
+#do again but now lets try text with colors... colors are the time period and words are treatment
+plot(Dvex_NMDS, disp="sites", type="n")
+ordiellipse(Dvex_NMDS, Dvex_Info$Type, col=4:5, kind = "ehull", lwd=3,label=TRUE)
+text(Dvex_NMDS, display="sites", cex=0.8, col=c(1,2,3)[Timefactor],as.character(Dvex_Info$Treatment))
+
+
+#ok lets do that but with circles around the time, now colors and words are same
+plot(Dvex_NMDS, disp="sites", type="n")
+ordiellipse(Dvex_NMDS, Dvex_Info$Time, col=1:4, kind = "ehull", lwd=3,label=TRUE)
+text(Dvex_NMDS, display="sites", cex=0.8, col=c(6,7,8)[Trtfactor], as.character(Dvex_Info$Treatment))
+
+#ok lets do that but try to parse out the chlorine factor
+plot(Dvex_NMDS, disp="sites", type="n")
+ordiellipse(Dvex_NMDS, Dvex_Info$Chlorine, col=1:4, kind = "ehull", lwd=3,label=TRUE)
+text(Dvex_NMDS, display="sites", cex=0.8, col=c(5,6)[Trtfactor], as.character(Dvex_Info$Treatment))
+
+
+
+```
+
+Looks like compex and simple are very different from each other but the treated/controls aren't very different from each other. But Time does seem to make a difference. 
+
+#permanova
+
+Ok now we're doing the permanova, so we go back to the datafile with everything
+
+```{r}
+
+DataPMVA<-read.csv("D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/R_All_Background_MDS_May2019.CSV")
+Dvex_Info$BACI<-paste(Dvex_Info$Treatment,Dvex_Info$Time)
+
+dvex.mat<-sqrt(DataNMDS)#square root transform
+dvex.dist<-vegdist(dvex.mat, method='bray')
+
+set.seed(36) #reproducible results
+dvex.div<-adonis2(dvex.dist~Treatment, data=DataPMVA, permutations = 999, method="bray")
+dvex.div
+
+set.seed(36) #reproducible results
+dvex.div2<-adonis2(dvex.dist~Time, data=DataPMVA, permutations = 999, method="bray")
+dvex.div2
+
+set.seed(36) #reproducible results
+dvex.div3<-adonis2(dvex.dist~Type, data=DataPMVA, permutations = 999, method="bray")
+dvex.div3
+
+set.seed(36) #reproducible results
+dvex.div4<-adonis2(dvex.dist~Sample.Month, data=DataPMVA, permutations = 999, method="bray")
+dvex.div4
+
+set.seed(36) #reproducible results
+dvex.div5<-adonis2(dvex.dist~ Treatment + Time + Sample.Month + Type, data=DataPMVA, permutations = 999, method="bray")
+dvex.div5
+
+set.seed(36) #reproducible results
+dvex.div6<-adonis2(dvex.dist~ Treatment* Time * Sample.Month * Type, data=DataPMVA, permutations = 999, method="bray")
+dvex.div6
+
+set.seed(36) #reproducible results
+dvex.div7<-adonis2(dvex.dist~ Treatment* Time * Type, data=DataPMVA, permutations = 999, method="bray")
+dvex.div7
+
+#need strata of plot.name because repeated measures!
+set.seed(36) #reproducible results
+dvex.div8<-adonis2(dvex.dist~ Treatment*Time*Type*Chlorine*Sample.Month, strata = Plot.Name, data=Dvex_Info, permutations = 999, method="bray")
+dvex.div8
+
+set.seed(36) #reproducible results
+dvex.div9<-adonis2(dvex.dist~ Sample.Month*Chlorine, strata = Plot.Name, data=Dvex_Info, permutations = 999, method="bray")
+dvex.div9
+
+set.seed(36) #reproducible results
+dvex.div10<-adonis2(dvex.dist~Treatment*Time*Sample.Month, strata = Plot.Name, data=Dvex_Info, permutations = 999, method="bray")
+dvex.div10
+
+
+##I think this is the best one because i've read that you should include all factors when possible
+#and it shows a small result in treatment/time
+set.seed(36) #reproducible results
+dvex.div11<-adonis2(dvex.dist~Treatment*Time*Sample.Month*Type, strata = Plot.Name, data=Dvex_Info, permutations = 999, method="bray")
+dvex.div11
+
+set.seed(36) #reproducible results
+dvex.div12<-adonis2(dvex.dist~Treatment+Time+Sample.Month+Type, strata = Plot.Name, data=Dvex_Info, permutations = 999, method="bray")
+dvex.div12
+
+
+```
+
+ok it occurs to me that I don't know why I didn't put all the factors together. Sample.Month and Time might need to be nested? unsure...
+
+
+#making pretty plots for pub
+
+Simple = triangles
+Complex = X's
+
+Treated = red
+Control = black
+
+1) Treated/Control are not different ellipse, with points marked for Simple, Complex
+
+```{r}
+par(family="serif")
+plot(Dvex_NMDS, disp="sites", type="n")
+ordiellipse(Dvex_NMDS, Dvex_Info$Treatment, col= c("black","red"), kind = "ehull", lwd=3,label=TRUE)
+points(Dvex_NMDS, display="sites", cex=2, pch= c(4,2)[Typefactpr], col=c("black","red")[Trtfactor])
+legend("bottomright", legend = c("Simple Treated","Complex Treated", "Simple Control", "Complex Control") , 
+      col = c("red","red","black","black") , pch = c(2, 4,2,4) , bty = "n",  
+      pt.cex = 1.7, cex = 1 , text.col = "black", horiz = FALSE, inset = c(0.05, 0.05))
+```
+
+2) Month Sampled/Time matters - ellipse around weeks, month labelled and in a color
+
+```{r}
+par(family="serif")
+plot(Dvex_NMDS, disp="sites", type="n")
+ordiellipse(Dvex_NMDS, Dvex_Info$Time, col= c("black","black","black"), kind = "ehull", lwd=3,label=TRUE)
+points(Dvex_NMDS, display="sites", cex=2, pch= c(4,2)[Typefactpr], col=c("orange","blue","green")[Monthfactor])
+
+legend("bottomright", legend = c("Simple May","Complex May", "Simple June", "Complex June","Simple August","Complex August") , 
+      col = c("green","green","blue","blue","orange","orange") , pch = c(2, 4,2,4,2,4) , bty = "n",  
+      pt.cex = 1, cex = 1 , text.col = "black", horiz = FALSE, inset = c(0.00, 0.00))
+```
+3) Simple v Complex - ellipse around type, month labelled and in a color
+
+```{r}
+par(family="serif")
+plot(Dvex_NMDS, disp="sites", type="n")
+ordiellipse(Dvex_NMDS, Dvex_Info$Type, col= c("black","black","black"), kind = "ehull", lwd=3,label=TRUE)
+points(Dvex_NMDS, display="sites", cex=2, pch= c(4,2)[Typefactpr], col=c("orange","blue","green")[Monthfactor])
+
+legend("bottomright", legend = c("Simple May","Complex May", "Simple June", "Complex June","Simple August","Complex August") , 
+      col = c("green","green","blue","blue","orange","orange") , pch = c(2, 4,2,4,2,4) , bty = "n",  
+      pt.cex = 1, cex = 1 , text.col = "black", horiz = FALSE, inset = c(0.00, 0.00))
+```
+4) Chlorine vs everything
+```{r}
+par(family="serif")
+plot(Dvex_NMDS, disp="sites", type="n")
+ordiellipse(Dvex_NMDS, Dvex_Info$Chlorine, col=c("red","black"), kind = "ehull", lwd=3,label=TRUE)
+points(Dvex_NMDS, display="sites", cex=2, pch= c(1,3)[Trtfactor], col=c("red","black")[chlfactor])
+legend("bottomright", legend = c("Treatment Site T0","Treated Site", "Control Site") , 
+      col = c("black","red","black") , pch = c(3,3,1) , bty = "n",  
+      pt.cex = 2, cex = 1 , text.col = "black", horiz = FALSE, inset = c(0.00, 0.00))
+```
+
+#New trial with ordiplot
+
+trying to overlay some dissimilarity circles like in primer
+```{r}
+ordiplot(Dvex_NMDS)
+ordiplot(Dvex_NMDS, dis="si")
+
+plot(Dvex_NMDS, choices = c(1, 2), type="n") #plots the ordination axes
+
+#OK! we're going to look at the similarity plot to see how many groups to create.
+#the average linkage seems to be the middle choice
+dvex.dist
+clus_dvex<-hclust(dvex.dist,"average")
+plot(clus_dvex,main="Average Linkage")
+rect.hclust(clus_dvex,5)
+#the number of clusters is up to me to decide, 3 or 5 seem common
+grp<-cutree(clus_dvex,5) #cutree produces a classification vector with the number of classes
+plot(Dvex_NMDS,display="sites",type="t")
+ordihull(Dvex_NMDS,grp,lty=2,col="red") #convex hulls
+text(Dvex_NMDS, display="sites", cex=0.8, col=c(5,6)[Monthfactor], as.character(Dvex_Info$Sample.Month))
+
+## alright this will be a busy graph
+plot(Dvex_NMDS, disp="sites", type="n")
+ordiellipse(Dvex_NMDS, Dvex_Info$Type, col= c("black","black","black"), kind = "ehull", lwd=3,label=TRUE)
+ordihull(Dvex_NMDS,grp,lty=2,col="grey62")
+points(Dvex_NMDS, display="sites", cex=2, pch= c(4,2)[Typefactpr], col=c("orange","blue","green4")[Monthfactor])
+
+legend("bottomright", legend = c("Simple May","Complex May", "Simple June", "Complex June","Simple August","Complex August") , 
+      col = c("green4","green4","blue","blue","orange","orange") , pch = c(2, 4,2,4,2,4) , bty = "n",  
+      pt.cex = 1, cex = 1 , text.col = "black", horiz = FALSE, inset = c(0.00, 0.00))
+
+```

@@ -1,0 +1,83 @@
+```{r load-and-prep-data, echo = FALSE, warning = FALSE, message = FALSE}
+# 20170307 0056 hrs
+
+# This is an R Markdown document that generates site maps and tables for the 2017 CDFW report. This includes data from fouling surveys from San Francisco Bay (2014 to 2016) and Humboldt Bay (2015), Port Hueneme (2015), and Marina del Rey (2015).
+
+
+# Load libraries
+library(knitr)
+library(vegan)
+library(ggplot2)
+library(scales)
+library(ggmap)
+library(pander)
+library(xtable)
+```
+```{r options-chunk, echo = FALSE, warning = FALSE, message = FALSE} 
+# Set options for all chunks
+opts_chunk$set(fig.cap="", fig.align = "center", echo = FALSE, warning = FALSE, message = FALSE, results = "asis")
+```
+```{r img-setup, include=FALSE, cache=FALSE}
+out.format <- knitr::opts_knit$get("out.format")
+img_template <- switch( out.format,
+                     word = list("img-params"=list(fig.width=6,
+                                                   fig.height=6,
+                                                   dpi=300)),
+                     {
+                       # default
+                       list("img-params"=list( dpi=300,
+                                               fig.width=6,
+                                               fig.height=6,
+                                               out.width="504px",
+                                               out.height="504px"))
+                     } )
+
+knitr::opts_template$set( img_template )
+```
+```{r load_pander_methods}
+replace.print.methods <- function(PKG_name = "pander") {
+   PKG_methods <- as.character(methods(PKG_name))
+   print_methods <- gsub(PKG_name, "print", PKG_methods)
+   for(i in seq_along(PKG_methods)) {
+      f <- eval(parse(text=paste(PKG_name,":::", PKG_methods[i], sep = ""))) # the new function to use for print
+      assign(print_methods[i], f, ".GlobalEnv")
+   }
+}
+#replace.print.methods()
+panderOptions("table.style", "rmarkdown") # Used in conjunction with the chunk setting results='asis'
+panderOptions("table.split.table", Inf) # Keep the table from splitting if it's too wide
+```
+```{r sitemaps, echo = FALSE, warning = FALSE, message = FALSE}
+
+# Load site location data
+dat <- read.csv("~/Dropbox (Smithsonian)/SERC Two The Return/CDFW/Data/2017 Fouling/2014 to 2016 CDFW Fouling Sites.csv")
+
+# Load bay-year listing
+mybays <- read.csv("~/Dropbox (Smithsonian)/SERC Two The Return/CDFW/Data/2017 Fouling/2014 to 2016 Bay Year List.csv", colClasses = c("character", "numeric"))
+
+# Generate site maps
+source('~/Dropbox (Smithsonian)/SERC Two The Return/CDFW/Analyses/Revised Code/Functions/generateSiteMap.R', chdir = TRUE)
+
+# Load and prepare block data
+source('~/Dropbox (Smithsonian)/SERC Two The Return/CDFW/Analyses/Revised Code/Data Processing/CDFW Report Block Table Prep.R', chdir = TRUE) # This loads and processes data to create block_tbl.output, which can then be formatted to show the sites to go with each site map.
+
+
+for(i in 1:nrow(mybays)) {
+	bay_name <- mybays[i, 1]
+	bay_year <- mybays[i, 2]
+
+	# Print site map
+	eval(parse(text = paste0(bay_name, bay_year, "SiteMap")))
+	
+	# Construct table
+	block_tbl <- block_tbl.output[block_tbl.output$Yeardeployed == bay_year & block_tbl.output$Bay == bay_name, ]
+	block_tbl <- block_tbl[, -c(2, 6)]
+	names(block_tbl) <- c("Block ID", "Site Name", "Latitude", "Longitude", "Date Deployed", "Date Retrieved")
+
+	# Print table
+	tab <- xtable(block_tbl)
+	rownames(tab) <- NULL
+	panderOptions("digits", 7)
+	pander(tab)
+}
+```

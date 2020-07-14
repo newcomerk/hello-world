@@ -1,0 +1,179 @@
+---
+title: "ModelScripts_Dvex"
+author: "Katy Newcomer"
+date: "May 23, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+#Starting Now!
+
+First we test to see normality
+
+```{r shapiro wilk}
+
+#DON"T USE THIS DATA SET, includes one day!
+
+Fourweekdata<-read.csv(file="D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Dvex4week_Models_May2019.csv",header=T)
+shapiro.test(Fourweekdata$ChangeCover)
+library("nortest", lib.loc="~/R/win-library/3.5")
+ad.test(Fourweekdata$ChangeCover)citat
+
+library(car)
+leveneTest(ChangeCover ~ Treatment, Fourweekdata, center=mean)
+
+```
+
+Since its normal, now we run the model set ups to see best AIC
+
+
+```{r }
+fourweekmdl<- lm(ChangeCover ~ Type * Treatment * TimePeriod, data=Fourweekdata)
+summary(fourweekmdl)
+AIC(fourweekmdl) 
+null<- lm(ChangeCover ~ 1, data=Fourweekdata)
+AIC(null) 
+summary(null)
+
+fourweekmdl2<- lm(ChangeCover ~ Type, data=Fourweekdata)
+AIC(fourweekmdl2)
+
+fourweekmdl3<- lm(ChangeCover ~ Type*Treatment, data=Fourweekdata)
+AIC(fourweekmdl3)
+
+fourweekmdl4<- lm(ChangeCover ~ Type*TimePeriod, data=Fourweekdata)
+AIC(fourweekmdl4)
+
+fourweekmdl5<- lm(ChangeCover ~ Treatment, data=Fourweekdata)
+AIC(fourweekmdl5)
+
+fourweekmdl6<- lm(ChangeCover ~ TimePeriod*Treatment, data=Fourweekdata)
+AIC(fourweekmdl6)
+summary(fourweekmdl6)
+
+fourweekmdl7<- lm(ChangeCover ~ TimePeriod, data=Fourweekdata)
+AIC(fourweekmdl7)
+
+anova(fourweekmdl6)
+```
+
+Looks like fourweekmdl6 is best fit. With Time Period (ie 1day Post, or 4 weeks post) and Treament (Treated or Control).
+Treatment (treated or control) does seem to be the most important factor. Interesting that Type (ie. Complex or Simple) wasn't in the winning model.
+
+##wait i fucked up.. should one day be in the model? no controls have 1 day
+
+I originally had the "difference in PC" from day 0 to day 1 but since no controls got a day 1 score, that was a lot of 0s "no change" which I think is unfair. So lets just do the change from day 0 to week 4
+Since its normal, now we run the model set ups to see best AIC
+
+
+```{r }
+four.fixed.data<- subset(Fourweekdata, TimePeriod == "FourWeeks")
+data$Month<- c("May","May","July","July","July","May","July","July","May","May","July","July","July","May","July",
+          "July")
+
+four.fixed.data.c<- subset(four.fixed.data, Type == "Complex")
+four.fixed.data.s<- subset(four.fixed.data, Type == "Simple")
+kruskal.test(ChangeCover ~ Treatment, data = four.fixed.data.c)
+kruskal.test(ChangeCover ~ Treatment, data = four.fixed.data.s)
+
+shapiro.test(data$ChangeCover)
+library("nortest", lib.loc="~/R/win-library/3.5")
+ad.test(data$ChangeCover)
+
+library(car)
+leveneTest(ChangeCover ~ Treatment, data, center=mean)
+
+fourweek2mdl<- lm(ChangeCover ~ Type * Treatment, data=data)
+summary(fourweek2mdl)
+AIC(fourweek2mdl) 
+null<- lm(ChangeCover ~ 1, data=data)
+AIC(null) 
+summary(null)
+anova(fourweek2mdl)
+summary(aov(ChangeCover ~ Type * Treatment, data=data))
+
+fourweek2mdl2<- lm(ChangeCover ~ Type, data=data)
+AIC(fourweek2mdl2)
+
+fourweek2mdl3<- lm(ChangeCover ~ Treatment + Type, data=data)
+AIC(fourweek2mdl3)
+
+fourweek2mdl5<- lm(ChangeCover ~ Treatment, data=data)
+AIC(fourweek2mdl5)
+summary(fourweek2mdl5)
+#this one works as well as forweek2mdl but fits less good when plotted
+anova(fourweek2mdl5)
+
+
+fourweek2mdl6<- lm(ChangeCover ~ Type * Treatment*Month, data=data)
+summary(fourweek2mdl6)
+#Ok great Month deployed doesn't seem to matter
+```
+
+
+Treatment (treated or control) seems to be the most important factor. Interesting that Type (ie. Complex or Simple) doesn't have a big impact.
+
+Now lets try for the 8 weeks? This is between the 4 week timepoint and 8 week
+
+```{r}
+Eightweekdata<-read.csv(file="D:/Dropbox (Smithsonian)/Alaska Dvex Eradication/Sitka D.vex/2018 Sitka DATA/Dvex8week_Models_May2019.csv",header=T)
+shapiro.test(Eightweekdata$ChangeCover4to8)
+library("nortest", lib.loc="~/R/win-library/3.5")
+ad.test(Eightweekdata$ChangeCover4to8)
+```
+Ok ad.test doesn't work on <7 items... makes sense, but can only use the shapiro test here
+```{r}
+
+eightweekmdl<- lm(ChangeCover4to8 ~ Treatment, data=Eightweekdata)
+summary(eightweekmdl)
+AIC(eightweekmdl)
+nulleight <- lm(ChangeCover4to8 ~ 1, data=Eightweekdata)
+AIC(nulleight)
+```
+Ok just barely beats the null and not very sig. pvalues - makes sense since so few data points and 4 and 8 weeks are pretty similar
+
+``` {r}
+
+shapiro.test(Eightweekdata$ChangeCover1to8)
+
+eightweekmdl2<- lm(ChangeCover1to8 ~ Treatment, data=Eightweekdata)
+summary(eightweekmdl2)
+anova(eightweekmdl2)
+AIC(eightweekmdl2)
+nulleight2 <- lm(ChangeCover1to8 ~ 1, data=Eightweekdata)
+AIC(nulleight2)
+
+eightweekmdl3<- lm(ChangeCover1to8 ~ Treatment * Type, data=Eightweekdata)
+summary(eightweekmdl3)
+anova(eightweekmdl3)
+
+```
+
+Yep ok beats the null in this case. surprising since there's so few replicates
+
+Now lets plot the residuals to check fit
+
+
+```{r}
+par(mfrow = c(2, 2))
+plot(fourweekmdl6)
+
+par(mfrow = c(2, 2))
+plot(fourweek2mdl)
+
+par(mfrow = c(2, 2))
+plot(fourweek2mdl5)
+
+par(mfrow = c(2, 2))
+plot(eightweekmdl2)
+```

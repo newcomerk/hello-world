@@ -1,0 +1,302 @@
+---
+title: "Point Counts"
+author: "Katy Newcomer"
+date: "July 10, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+##NMDS trial for Point Counts
+
+This is primary points, absolute values
+
+library(vegan)
+# `metaMDS` requires a community-by-species matrix
+# Let's create that matrix with some randomly sampled data
+
+
+# The function `metaMDS` will take care of most of the distance 
+# calculations, iterative fitting, etc. We need simply to supply:
+PriAbs_NMDS=metaMDS(community_matrix, # Our community-by-species matrix
+                     k=2) # The number of reduced dimensions
+# You should see each iteration of the NMDS until a solution is reached
+# (i.e., stress was minimized after some number of reconfigurations of 
+# the points in 2 dimensions). You can increase the number of default 
+# iterations using the argument "trymax=##"
+example_NMDS=metaMDS(community_matrix,k=2,trymax=100)
+
+# And we can look at the NMDS object
+example_NMDS # metaMDS has automatically applied a square root 
+# transformation and calculated the Bray-Curtis distances for our 
+# community-by-site matrix
+# Let's examine a Shepard plot, which shows scatter around the regression
+# between the interpoint distances in the final configuration (distances 
+# between each pair of communities) against their original dissimilarities
+stressplot(example_NMDS)
+# Large scatter around the line suggests that original dissimilarities are
+# not well preserved in the reduced number of dimensions
+
+#Now we can plot the NMDS
+plot(example_NMDS)
+# It shows us both the communities ("sites", open circles) and species 
+# (red crosses), but we  don't know which are which!
+
+{r}
+library(vegan)
+DataPCNMDS<-read.csv("D:/Dropbox (Smithsonian)/Point Count Functional Group Paper/KN Stats Scratch/Primary_Abs_10Jul19.CSV")
+
+PriAbsPC_NMDS <- metaMDS(DataPCNMDS, k=2, trymax=100)
+PriAbsPC_NMDS
+
+stressplot(PriAbsPC_NMDS)
+plot(PriAbsPC_NMDS)
+```
+
+Thats pretty terrible. stress >0.2
+
+
+#ok Bay Level
+```{r}
+library(vegan)
+BayDataPCNMDS<-read.csv("D:/Dropbox (Smithsonian)/Point Count Functional Group Paper/KN Stats Scratch/TotalPrimary_Abs_BayLevel_10Jul19.CSV")
+
+#this is not adjusted yet for number of plates - must do!!!!
+
+BayPriAbsPC_NMDS <- metaMDS(BayDataPCNMDS, k=2, trymax=100)
+BayPriAbsPC_NMDS
+
+stressplot(BayPriAbsPC_NMDS)
+plot(BayPriAbsPC_NMDS)
+```
+
+stress =0.20 so ok
+
+```{r}
+##load the background data file
+Bay_Info<-read.csv("D:/Dropbox (Smithsonian)/Point Count Functional Group Paper/KN Stats Scratch/Info_TotalPrimary_Abs_BayLevel_10Jul19.CSV")
+
+Bay_Info2<-Bay_Info[1:39,]
+
+plot(BayPriAbsPC_NMDS, disp="sites", type="n")
+text(BayPriAbsPC_NMDS, display="sites", cex=0.8, as.character(Bay_Info2$Bay))
+ordiellipse(BayPriAbsPC_NMDS, Bay_Info2$MEOW.EcoCode, col=1, kind = "ehull", lwd=3,label=TRUE)
+```
+
+#lets try a CCA
+can ONLY be continuous factors
+```{r}
+#this rotates the file, but didn't need to do it
+#y<-as.data.frame(t(Bay_Info2))
+#this subsets out the seleted rows,columns but just reloaded a file eventually
+#Bay_Info3<-Bay_Info2[,5:8]
+#Bay_Info4<-Bay_Info3[,c(1,3,4)]
+library(viridis)
+ContBay_Info<-read.csv("D:/Dropbox (Smithsonian)/Point Count Functional Group Paper/KN Stats Scratch/ContInfo_TotalPrimary_Abs_BayLevel_10Jul19.CSV")
+ContBay_Info2<-ContBay_Info[1:39,]
+
+info.CCA<- cca(BayDataPCNMDS, ContBay_Info2)
+scores(info.CCA, display = "sites")
+
+scores(info.CCA, display = "bp")
+goodness(info.CCA, choices=1:4, statistic = "explained",display="sites")
+eigengrad(ContBay_Info2, BayDataPCNMDS)
+anova(info.CCA, test = "F")
+plot(info.CCA)
+plot(info.CCA,type = "n")
+text(info.CCA,display="sites", as.character(Bay_Info2$Bay))
+text(info.CCA, display="bp", col="blue")
+
+#making a category of cold to warm
+Bay_Info2$TempGrp <- as.numeric(cut(ContBay_Info2$Average.Water.Temp...C., 10))
+#making a category of Low Lat to High Lat
+Bay_Info2$LatGrp <- as.numeric(cut(ContBay_Info2$Latitude, 10))
+
+
+#here if we reduce by only strong eigen value factors
+info.CCA2<- cca(BayDataPCNMDS ~ Latitude + Average.Water.Temp...C. + Average.DO..mg.L., data=ContBay_Info2)
+anova(info.CCA2, by = "terms")
+plot(info.CCA2,type = "n")
+text(info.CCA2,display="sites", as.character(Bay_Info2$Bay))
+text(info.CCA2, display="bp", col="blue")
+
+#lets try with AbsLatitude
+info.CCA3<- cca(BayDataPCNMDS ~ AbsLatitude + Average.Water.Temp...C. + Average.DO..mg.L., data=ContBay_Info2)
+anova(info.CCA3, by = "terms")
+plot(info.CCA3,type = "n")
+text(info.CCA3,display="sites", as.character(Bay_Info2$Bay))
+text(info.CCA3, display="bp", col="blue")
+
+#lets try with AbsLatitude & all factors
+info.CCA4<- cca(BayDataPCNMDS, ContBay_Info2)
+anova(info.CCA4, test = "F")
+plot(info.CCA4,type = "n")
+text(info.CCA4,display="sites", as.character(Bay_Info2$Bay))
+plot(info.CCA4,type = "n")
+text(info.CCA4, display="bp", col="blue")
+scores(info.CCA4, display="bp")
+
+#lets try with AbsLatitude & few factor
+info.CCA5<- cca(BayDataPCNMDS ~ AbsLatitude +Average.Water.Temp...C.+ Average.Secchi..m.+Yeardeployed_RAW, data=ContBay_Info2)
+anova(info.CCA5, by = "terms")
+plot(info.CCA5,type = "n")
+text(info.CCA5,display="sites", as.character(Bay_Info2$Bay))
+plot(info.CCA5,type = "n")
+text(info.CCA5, display="bp", col="blue")
+scores(info.CCA5, display="bp")
+eigengrad(ContBay_Info2, BayDataPCNMDS)
+
+#colored by temperature
+Tempfactor<-factor(Bay_Info2$TempGrp)
+library(RColorBrewer)
+plot(info.CCA2,type = "n")
+text(info.CCA2, display="bp", col="blue")
+text(info.CCA2, display="sites", cex=0.8, col=inferno(10)[Bay_Info2$TempGrp],as.character(Bay_Info2$Bay))
+
+#trying temperature a different color wheel
+plot(info.CCA2,type = "n")
+text(info.CCA2, display="bp", col="blue")
+text(info.CCA2, display="sites", cex=0.8, col = brewer.pal(n = 5, name = "YlOrRd")[Bay_Info2$TempGrp],as.character(Bay_Info2$Bay))
+
+#colored by latitude red is south purple is north
+Tempfactor<-factor(Bay_Info2$TempGrp)
+library(RColorBrewer)
+plot(info.CCA2,type = "n")
+text(info.CCA2, display="bp", col="blue")
+text(info.CCA2, display="sites", cex=0.8, col= c("red","dkorange","ltorange","yellow","bisque3","cornflowerblue","blue","navy","purple", "purple4")[Bay_Info2$LatGrp],as.character(Bay_Info2$Bay))
+
+#colored by latitude red is equator, purple is far
+Tempfactor<-factor(Bay_Info2$TempGrp)
+library(RColorBrewer)
+plot(info.CCA2,type = "n")
+text(info.CCA2, display="bp", col="blue")
+text(info.CCA2, display="sites", cex=0.8, col= c("purple4","navy","bisque4","orange1","red","red","orange1","bisque4","navy", "purple4")[Bay_Info2$LatGrp],as.character(Bay_Info2$Bay))
+
+#species
+plot(info.CCA2,type = "n")
+text(info.CCA2, display="bp", col="blue")
+text(info.CCA2, display="species", cex=0.8)
+
+#colored by latitude red is equator, purple is far
+plot(info.CCA5,type = "n")
+text(info.CCA5, display="bp", col="blue")
+text(info.CCA5, display="sites", cex=0.8, col= c("darkmagenta","navy","bisque4","orange1","red","red","orange1","bisque4","navy", "darkmagenta")[Bay_Info2$LatGrp],as.character(Bay_Info2$Bay))
+
+```
+
+#Ok July 11! Trying Block Level
+```{r}
+#this has lots of NA because env data wasn't taken great, we'll try first just to remove all
+#in the future might want to try without Secci because thats limiting
+Block_Info<-read.csv("D:/Dropbox (Smithsonian)/Point Count Functional Group Paper/KN Stats Scratch/TotalPrimary_Abs_BlockLevel_11Jul19.CSV")
+
+completerecords <- na.omit(Block_Info)
+
+Block_MDS<-completerecords[,4:15]
+BlockInfo<- completerecords[,29:33]
+BlockNames<-completerecords[,c(1,2,29)]
+#making a category of Low Lat to High Lat
+BlockNames$LatGrp <- as.numeric(cut(BlockInfo$LAT, 10))
+
+library(vegan)
+info.CCA.block<- cca(Block_MDS, BlockInfo)
+plot(info.CCA.block)
+scores(info.CCA.block, display = "sites")
+scores(info.CCA.block, display = "bp")
+goodness(info.CCA, choices=1:4, statistic = "explained",display="sites")
+eigengrad(BlockInfo, Block_MDS)
+anova(info.CCA.block, test = "F")
+wascores(BlockInfo,Block_MDS)
+
+
+plot(info.CCA.block,type = "n")
+points(info.CCA.block, display = "sites", col=c("red","dkorange","ltorange","yellow","bisque4","cornflowerblue","blue","navy","purple4", "purple4")[BlockNames$LatGrp])
+text(info.CCA.block, display="bp", col="blue")
+
+
+plot(info.CCA.block,display="species")
+text(info.CCA.block, display="bp", col="blue")
+
+plot(completerecords$Sal.1m, completerecords$ADJ_Sum.of.Ab_Non.Calcareous.Worm.Tube_Primary)
+plot(completerecords$Sal.1m, completerecords$ADJ_Sum.of.Ab_Calcareous.Worm.Tube_Primary)
+plot(completerecords$Sal.1m, completerecords$ADJ_Sum.of.Ab_Open.Space_Primary)
+plot(completerecords$Sal.1m, completerecords$ADJ_Sum.of.Ab_Solitary.Tunicata_Primary)
+
+plot(completerecords$LAT, completerecords$ADJ_Sum.of.Ab_Non.Calcareous.Worm.Tube_Primary)
+
+#trying a block level NMDS maybe
+
+```
+
+library(ggplot2)
+
+ggplot(completerecords, aes(x = LAT, y = Block_MDS, fill = Block_MDS)) + geom_area(position = 'stack')
+
+plot(completerecords$LAT,Block_MDS)
+
+#ok! trying new analyses based on Engle and Summers 2001
+
+Take Bay Data and separate each bay into a 1* lat band, we do this because the dedrograms and such can't deal with lines that are all in the same category
+Get a summary of how many blocks in each band
+```{r}
+library(vegan)
+BandDataPC<-read.csv("D:/Dropbox (Smithsonian)/Point Count Functional Group Paper/KN Stats Scratch/LatBands_Primary_Block_22Aug19.CSV")
+
+BandDataPCNMDS<-BandDataPC[,16:27]
+
+BandPriAdjPC_NMDS <- metaMDS(BandDataPCNMDS, k=2, trymax=100)
+BandPriAdjPC_NMDS
+
+stressplot(BandPriAdjPC_NMDS)
+plot(BandPriAdjPC_NMDS)
+row.names(BandDataPCNMDS) <- BandDataPC$LatBand
+
+latPC.mat<-sqrt(BandDataPCNMDS)#square root transform
+latPC.dist<-vegdist(latPC.mat, method='bray')
+clus_bandPC<-hclust(latPC.dist,"average")
+plot(clus_bandPC,main="Average Linkage")
+rect.hclust(clus_bandPC,7)
+
+library("ape", lib.loc="~/R/win-library/3.5")
+colors = c("red", "blue", "green", "black", "orange","purple","gray")
+clus7 = cutree(clus_bandPC, 7)
+plot(as.phylo(clus_bandPC), type = "fan", tip.color = colors[clus7],
+      cex = 0.7)
+```
+
+#dendrograms
+these are interesting, but bay level and functional group level is pretty muddled. Might be better with genus or species
+```{r}
+#added rownames so labels wouldn't be random numbers
+#bray-curtis and average link
+PC.mat<-sqrt(BayDataPCNMDS)#square root transform
+PC.dist<-vegdist(PC.mat, method='bray')
+clus_bayPC<-hclust(PC.dist,"average")
+plot(clus_bayPC,main="Average Linkage")
+#this divides in 5 clusters, clusters are randomly chosen number of breaks
+rect.hclust(clus_bayPC,5)
+
+#different design
+dend <- as.dendrogram(clus_bayPC)
+dend
+plot(dend)
+
+library("ape", lib.loc="~/R/win-library/3.5")
+plot(as.phylo(clus_bayPC), type = "unrooted", cex = 0.6,
+     no.margin = TRUE)
+plot(as.phylo(clus_bayPC), type = "fan")
+
+colors = c("red", "blue", "green", "black", "orange","purple","gray")
+clus7 = cutree(clus_bayPC, 7)
+plot(as.phylo(clus_bayPC), type = "fan", tip.color = colors[clus7],
+      cex = 0.7)
+```
+
