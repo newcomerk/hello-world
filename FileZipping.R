@@ -24,7 +24,8 @@ file.rename(from = old_zip_name, to = new_zip_name)
 
 #make a list of just the unique numbers
 
-setwd("C:/Users/kxlawson/OneDrive - New York State Office of Information Technology Services/Documents/KLawson/Project Files/Habitats and Communities/Marine Eelgrass Meadow/ARCHV Biotics Source Features")
+#setwd("C:/Users/kxlawson/OneDrive - New York State Office of Information Technology Services/Documents/KLawson/Project Files/Habitats and Communities/Marine Eelgrass Meadow/ARCHV Biotics Source Features")
+setwd("C:/Users/kxlawson/OneDrive - New York State Office of Information Technology Services/Documents/KLawson/Project Files/Habitats and Communities/Marine Eelgrass Meadow/New 2025 Source Features")
 
 ListNames<-list.files()
 ListNames<- sub("\\..*$", "", ListNames)
@@ -32,8 +33,9 @@ ListNames<- unique(ListNames)
 
   for(i in 1:length(ListNames)){
 
-filtered_files <- list.files(pattern = ListNames[i], # Matches files
+filtered_files <- list.files(pattern = paste0("^" ,ListNames[i]), # Matches files # need the ^ to match pattern at the beginning of the string
                              full.names = FALSE) # Returns full paths
+
 
 zip(zipfile = paste0(ListNames[i], ".zip"), files = filtered_files)
 
