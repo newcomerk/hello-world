@@ -1,0 +1,11 @@
+
+NYOAP - from meaghan rickard
+Cannot find much info on what it was built off.
+
+other_states
+
+
+NY_State
+Published: February 2020. A vector polygon GIS file that includes 1) the New York State boundary over land areas and 2) the state shoreline, including islands, in areas where the state boundary extends over major hydrographic features. The purpose is to provide an “outline” of the state for GIS and cartographic uses. It can be used to clip the boundaries in the Cities_Towns and Counties layers back to the shoreline if it is desired to primarily only use or depict the land areas covered by jurisdictions around the perimeter of the state. The boundaries were revised to 1:24,000-scale accuracy. Ongoing work will adjust the shorelines to 1:24,000-scale accuracy. 
+NYS Office of Information Technology Services GIS Program Office (GPO)
+KNL originally sourced from MMcCormack
